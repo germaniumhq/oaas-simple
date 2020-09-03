@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package gr;
+
+message Data {
+  string s = 1;
+  bytes b = 2;
+}
+
+message ServiceCallParam {
+  string name = 1;
+  Data data = 2;
+}
+
+message ServiceCall {
+  string name = 1;
+  repeated ServiceCallParam parameters = 2;
+}
+
+service ServiceInvoker {
+  rpc InvokeMethod(ServiceCall) returns (Data) {}
+}

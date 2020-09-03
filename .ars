@@ -1,0 +1,4 @@
+arg0: oaas_transport_grpc
+oaas_transport_grpc: true
+templates:
+- py3/lib
