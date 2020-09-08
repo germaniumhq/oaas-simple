@@ -5,6 +5,7 @@ package gr;
 message Data {
   string s = 1;
   bytes b = 2;
+  string json = 3;
 }
 
 message ServiceCallParam {
@@ -13,10 +14,16 @@ message ServiceCallParam {
 }
 
 message ServiceCall {
-  string name = 1;
-  repeated ServiceCallParam parameters = 2;
+  string namespace = 1;
+  string service = 2;
+  string version = 3;
+  string method = 4;
+  repeated ServiceCallParam parameters = 5;
 }
 
 service ServiceInvoker {
+  /**
+   * Invoke a single method.
+   */
   rpc InvokeMethod(ServiceCall) returns (Data) {}
 }

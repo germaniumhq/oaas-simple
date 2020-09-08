@@ -9,3 +9,13 @@ oaas_transport_grpc program.
 -----------------------------------------------------------------------------
 pip install oaas_transport_grpc
 -----------------------------------------------------------------------------
+
+
+== Development
+
+To update the serialization of method calls, just change the proto file and:
+
+[source,sh]
+-----------------------------------------------------------------------------
+python -m grpc_tools.protoc -I ./ --python_out=oaas_transport_grpc/rpc/ ./call.proto
+-----------------------------------------------------------------------------
