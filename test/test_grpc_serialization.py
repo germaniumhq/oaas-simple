@@ -32,7 +32,7 @@ class TestCallClient:
 
 
 oaas.register_server_provider(OaasGrpcTransportServer())
-oaas._registrations.clients_middleware.add(OaasGrpcTransportClient())
+oaas.register_client_provider(OaasGrpcTransportClient())
 
 oaas.serve()
 
@@ -41,4 +41,3 @@ class TestGrpcSerialization(unittest.TestCase):
     def test_serialization(self):
         client = oaas.get_client(TestCallClient)
         self.assertEqual("abc", client.echo_data(data="abc"))
-        print("test succeeded")

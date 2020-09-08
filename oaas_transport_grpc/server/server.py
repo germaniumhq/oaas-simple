@@ -12,10 +12,11 @@ from oaas_transport_grpc.server.service_invoker_proxy import ServiceInvokerProxy
 
 class OaasGrpcTransportServer(oaas.ServerMiddleware):
     def serve(self) -> None:
-        server = self.start_server()
+        self.server = self.start_server()
         self.register_services_into_registry()
 
-        server.wait_for_termination()
+    def join(self) -> None:
+        self.server.wait_for_termination()
 
     def start_server(self):
         server_address: str = '[::]:8999'
