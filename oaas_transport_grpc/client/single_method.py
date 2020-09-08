@@ -1,20 +1,9 @@
-import json
-from typing import Any, Union
+from typing import Any
 
 from oaas import ClientDefinition
 
+from oaas_transport_grpc.data import create_data, from_data
 from oaas_transport_grpc.rpc import call_pb2
-
-
-def create_data(data: Union[str, bytes, Any]) -> call_pb2.Data:
-    if isinstance(data, str):
-        return call_pb2.Data(s=data)
-
-    if isinstance(data, bytes):
-        return call_pb2.Data(b=bytes)
-
-    json_data = json.dumps(data)
-    return call_pb2.Data(json=json_data)
 
 
 class SingleMethod:
@@ -51,4 +40,4 @@ class SingleMethod:
             parameters=parameters
         ))
 
-        return response
+        return from_data(response)
