@@ -3,28 +3,26 @@ import re
 
 from oaas.registry import ServiceAddress
 
-IP_PORT_ADDRESS = re.compile('^(.+)(:\d+)?$')
+IP_PORT_ADDRESS = re.compile("^(.+)(:\d+)?$")
 
 
 def find_registry() -> ServiceAddress:
-    if 'OAAS_REGISTRY' in os.environ:
+    if "OAAS_REGISTRY" in os.environ:
         return read_oaas_registry_from_environ()
 
     return create_static_search_list()
 
 
 def read_oaas_registry_from_environ() -> ServiceAddress:
-    oaas_registry = os.environ['OAAS_REGISTRY']
+    oaas_registry = os.environ["OAAS_REGISTRY"]
     m = IP_PORT_ADDRESS.match(oaas_registry)
 
     if not m:
-        raise Exception(f"Unable to parse OAAS_REGISTRY "
-                        f"environment variable: {oaas_registry}")
+        raise Exception(
+            f"Unable to parse OAAS_REGISTRY " f"environment variable: {oaas_registry}"
+        )
 
-    return {
-        "port": int(m.group(2)),
-        "addresses": [m.group(1)]
-    }
+    return {"port": int(m.group(2)), "addresses": [m.group(1)]}
 
 
 def create_static_search_list() -> ServiceAddress:
@@ -37,5 +35,5 @@ def create_static_search_list() -> ServiceAddress:
             # kubernetes
             "oaas-registry",
             "oaas-registry.oaas-registry.svc.cluster.local",
-        ]
+        ],
     }

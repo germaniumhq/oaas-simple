@@ -30,12 +30,14 @@ class OaasGrpcTransportClient(oaas.ClientMiddleware):
         if cd.name == "oaas-registry":
             service_address = registry_discovery.find_registry()
         else:
-            service_address = oaas_registry().resolve_service({
-                "name": cd.name,
-                "protocol": "simple",
-                "namespace": "",
-                "version": "",
-            })
+            service_address = oaas_registry().resolve_service(
+                {
+                    "name": cd.name,
+                    "protocol": "simple",
+                    "namespace": "",
+                    "version": "",
+                }
+            )
 
         address = self._client_to_address.get(cd.name, None)
 
@@ -44,12 +46,9 @@ class OaasGrpcTransportClient(oaas.ClientMiddleware):
 
         channel = self.create_channel(cd, service_address)
 
-        return ServiceClientProxy(client_definition=cd,
-                                  channel=channel)
+        return ServiceClientProxy(client_definition=cd, channel=channel)
 
-    def create_channel(self,
-                       cd: ClientDefinition,
-                       service_address: ServiceAddress):
+    def create_channel(self, cd: ClientDefinition, service_address: ServiceAddress):
         port = service_address["port"]
         addresses = service_address["addresses"]
         random.shuffle(addresses)
@@ -73,8 +72,10 @@ class OaasGrpcTransportClient(oaas.ClientMiddleware):
 
             return channel
 
-        raise Exception(f"Unable to find port {port} open on any of "
-                        f"the {service_address['addresses']}")
+        raise Exception(
+            f"Unable to find port {port} open on any of "
+            f"the {service_address['addresses']}"
+        )
 
     def can_handle(self, cd: ClientDefinition) -> bool:
         # FIXME: should at least check the registered types

@@ -11,10 +11,8 @@ class ServiceClientProxy:
     Makes it so any call invoked on it, is being forwarded
     to the service.
     """
-    def __init__(self,
-                 *,
-                 client_definition: ClientDefinition,
-                 channel: Any) -> None:
+
+    def __init__(self, *, client_definition: ClientDefinition, channel: Any) -> None:
         self._methods: Dict[str, Callable] = dict()
         self.client_definition = client_definition
 

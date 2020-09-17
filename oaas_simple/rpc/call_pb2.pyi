@@ -23,12 +23,10 @@ from typing_extensions import (
     Literal as typing_extensions___Literal,
 )
 
-
 builtin___bool = bool
 builtin___bytes = bytes
 builtin___float = float
 builtin___int = int
-
 
 DESCRIPTOR: google___protobuf___descriptor___FileDescriptor = ...
 
@@ -37,30 +35,38 @@ class Data(google___protobuf___message___Message):
     s: typing___Text = ...
     b: builtin___bytes = ...
     json: typing___Text = ...
-
-    def __init__(self,
+    def __init__(
+        self,
         *,
-        s : typing___Optional[typing___Text] = None,
-        b : typing___Optional[builtin___bytes] = None,
-        json : typing___Optional[typing___Text] = None,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions___Literal[u"b",b"b",u"json",b"json",u"s",b"s"]) -> None: ...
+        s: typing___Optional[typing___Text] = None,
+        b: typing___Optional[builtin___bytes] = None,
+        json: typing___Optional[typing___Text] = None,
+    ) -> None: ...
+    def ClearField(
+        self,
+        field_name: typing_extensions___Literal["b", b"b", "json", b"json", "s", b"s"],
+    ) -> None: ...
+
 type___Data = Data
 
 class ServiceCallParam(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     name: typing___Text = ...
-
     @property
     def data(self) -> type___Data: ...
-
-    def __init__(self,
+    def __init__(
+        self,
         *,
-        name : typing___Optional[typing___Text] = None,
-        data : typing___Optional[type___Data] = None,
-        ) -> None: ...
-    def HasField(self, field_name: typing_extensions___Literal[u"data",b"data"]) -> builtin___bool: ...
-    def ClearField(self, field_name: typing_extensions___Literal[u"data",b"data",u"name",b"name"]) -> None: ...
+        name: typing___Optional[typing___Text] = None,
+        data: typing___Optional[type___Data] = None,
+    ) -> None: ...
+    def HasField(
+        self, field_name: typing_extensions___Literal["data", b"data"]
+    ) -> builtin___bool: ...
+    def ClearField(
+        self, field_name: typing_extensions___Literal["data", b"data", "name", b"name"]
+    ) -> None: ...
+
 type___ServiceCallParam = ServiceCallParam
 
 class ServiceCall(google___protobuf___message___Message):
@@ -69,17 +75,37 @@ class ServiceCall(google___protobuf___message___Message):
     service: typing___Text = ...
     version: typing___Text = ...
     method: typing___Text = ...
-
     @property
-    def parameters(self) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[type___ServiceCallParam]: ...
-
-    def __init__(self,
+    def parameters(
+        self,
+    ) -> google___protobuf___internal___containers___RepeatedCompositeFieldContainer[
+        type___ServiceCallParam
+    ]: ...
+    def __init__(
+        self,
         *,
-        namespace : typing___Optional[typing___Text] = None,
-        service : typing___Optional[typing___Text] = None,
-        version : typing___Optional[typing___Text] = None,
-        method : typing___Optional[typing___Text] = None,
-        parameters : typing___Optional[typing___Iterable[type___ServiceCallParam]] = None,
-        ) -> None: ...
-    def ClearField(self, field_name: typing_extensions___Literal[u"method",b"method",u"namespace",b"namespace",u"parameters",b"parameters",u"service",b"service",u"version",b"version"]) -> None: ...
+        namespace: typing___Optional[typing___Text] = None,
+        service: typing___Optional[typing___Text] = None,
+        version: typing___Optional[typing___Text] = None,
+        method: typing___Optional[typing___Text] = None,
+        parameters: typing___Optional[
+            typing___Iterable[type___ServiceCallParam]
+        ] = None,
+    ) -> None: ...
+    def ClearField(
+        self,
+        field_name: typing_extensions___Literal[
+            "method",
+            b"method",
+            "namespace",
+            b"namespace",
+            "parameters",
+            b"parameters",
+            "service",
+            b"service",
+            "version",
+            b"version",
+        ],
+    ) -> None: ...
+
 type___ServiceCall = ServiceCall

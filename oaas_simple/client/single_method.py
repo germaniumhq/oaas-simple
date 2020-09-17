@@ -7,10 +7,9 @@ from oaas_simple.rpc import call_pb2
 
 
 class SingleMethod:
-    def __init__(self, *,
-                 stub: Any,
-                 client_definition: ClientDefinition,
-                 method_name: str):
+    def __init__(
+        self, *, stub: Any, client_definition: ClientDefinition, method_name: str
+    ):
         self.stub = stub
         self.client_definition = client_definition
         self.method = method_name
@@ -19,25 +18,21 @@ class SingleMethod:
         parameters = []
 
         for arg in args:
-            param = call_pb2.ServiceCallParam(
-                name=None,
-                data=create_data(arg)
-            )
+            param = call_pb2.ServiceCallParam(name=None, data=create_data(arg))
             parameters.append(param)
 
         for arg_name, arg in kwargs.items():
-            param = call_pb2.ServiceCallParam(
-                name=arg_name,
-                data=create_data(arg)
-            )
+            param = call_pb2.ServiceCallParam(name=arg_name, data=create_data(arg))
             parameters.append(param)
 
-        response: call_pb2.Data = self.stub.InvokeMethod(call_pb2.ServiceCall(  # ignore: type
-            namespace=None,
-            service=self.client_definition.name,
-            version=None,
-            method=self.method,
-            parameters=parameters
-        ))
+        response: call_pb2.Data = self.stub.InvokeMethod(
+            call_pb2.ServiceCall(  # ignore: type
+                namespace=None,
+                service=self.client_definition.name,
+                version=None,
+                method=self.method,
+                parameters=parameters,
+            )
+        )
 
         return from_data(response)

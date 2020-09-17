@@ -14,6 +14,6 @@ def find_ips() -> List[oaas.registry.IpLink]:
             continue
 
         for link in ifaddresses[netifaces.AF_INET]:
-            result.append(link['addr'])
+            result.append(link["addr"])
 
     return result

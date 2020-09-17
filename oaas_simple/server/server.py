@@ -23,9 +23,11 @@ class OaasGrpcTransportServer(oaas.ServerMiddleware):
         self.server.wait_for_termination()
 
     def start_server(self):
-        server_address: str = f'[::]:{self.port}'
+        server_address: str = f"[::]:{self.port}"
         server = grpc.server(futures.ThreadPoolExecutor())
-        call_pb2_grpc.add_ServiceInvokerServicer_to_server(ServiceInvokerProxy(), server)
+        call_pb2_grpc.add_ServiceInvokerServicer_to_server(
+            ServiceInvokerProxy(), server
+        )
         port = server.add_insecure_port(server_address)
         server.start()
         return server
@@ -34,10 +36,13 @@ class OaasGrpcTransportServer(oaas.ServerMiddleware):
         registry = oaas_registry()
 
         for service_definition, _ in registrations.services.items():
-            registry.register_service({
-                "name": service_definition.name,
-                "protocol": "simple",
-            }, {
-                "port": self.port,
-                "addresses": find_ips(),
-            })
+            registry.register_service(
+                {
+                    "name": service_definition.name,
+                    "protocol": "simple",
+                },
+                {
+                    "port": self.port,
+                    "addresses": find_ips(),
+                },
+            )

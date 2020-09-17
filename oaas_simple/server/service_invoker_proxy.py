@@ -18,6 +18,7 @@ class ServiceInvokerProxy(call_pb2_grpc.ServiceInvokerServicer):
     """
     Invokes the service on this server.
     """
+
     def InvokeMethod(self, request: call_pb2.ServiceCall, context) -> call_pb2.Data:  # type: ignore
         service_instance = self._service_instances[request.service]  # type: ignore
 

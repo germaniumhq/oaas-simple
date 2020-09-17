@@ -32,7 +32,7 @@ def main() -> None:
 
 def find_target_file(ui_file: str) -> str:
     # 3:-3 - remove FOLDER from prefix, and EXTENSION from suffix of the file
-    python_file = ui_file[len(FOLDER) + 1:-(len(EXTENSION))] + ".py"
+    python_file = ui_file[len(FOLDER) + 1 : -(len(EXTENSION))] + ".py"
     return os.path.join("oaas_transport_grpc", FOLDER, "generated", python_file)
 
 
@@ -67,17 +67,23 @@ def ui_compile(ui_file, target_file) -> None:
         yellow(target_file, bold=True),
     )
 
-    subprocess.check_call([
-        "python", "-m", "grpc_tools.protoc", "-I", FOLDER,
-        "--python_out=oaas_transport_grpc/rpc/",
-        "--grpc_python_out=oaas_transport_grpc/rpc",
-        "--mypy_out=oaas_transport_grpc/rpc grpc/call.proto",
-    ])
+    subprocess.check_call(
+        [
+            "python",
+            "-m",
+            "grpc_tools.protoc",
+            "-I",
+            FOLDER,
+            "--python_out=oaas_transport_grpc/rpc/",
+            "--grpc_python_out=oaas_transport_grpc/rpc",
+            "--mypy_out=oaas_transport_grpc/rpc grpc/call.proto",
+        ]
+    )
 
 
 def get_last_modified(file_name: str) -> int:
     return os.path.getmtime(file_name)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
