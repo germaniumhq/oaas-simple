@@ -1,7 +1,7 @@
 import json
 from typing import Union, Any
 
-from oaas_transport_grpc.rpc import call_pb2
+from oaas_simple.rpc import call_pb2
 
 
 def create_data(data: Union[str, bytes, Any]) -> call_pb2.Data:

@@ -1,15 +1,12 @@
 from typing import Optional
 
 import oaas
+import oaas.registry
 
 
 @oaas.client("oaas-registry")
-class OaasRegistry:
-    def resolve_service(self, name: str) -> str:
-        ...
-
-    def register_service(self, name: str, address: str) -> None:
-        ...
+class OaasRegistry(oaas.registry.OaasRegistry):
+    ...
 
 
 _oaas_registry: Optional[OaasRegistry] = None

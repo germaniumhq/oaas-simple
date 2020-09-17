@@ -2,9 +2,9 @@ from typing import Any, Dict
 
 import oaas._registrations as registrations
 
-from oaas_transport_grpc.data import from_data, create_data
-from oaas_transport_grpc.rpc import call_pb2
-from oaas_transport_grpc.rpc import call_pb2_grpc
+from oaas_simple.data import from_data, create_data
+from oaas_simple.rpc import call_pb2
+from oaas_simple.rpc import call_pb2_grpc
 
 
 class ServiceInvokerProxy(call_pb2_grpc.ServiceInvokerServicer):
@@ -18,15 +18,15 @@ class ServiceInvokerProxy(call_pb2_grpc.ServiceInvokerServicer):
     """
     Invokes the service on this server.
     """
-    def InvokeMethod(self, request: call_pb2.ServiceCall, context) -> call_pb2.Data:
-        service_instance = self._service_instances[request.service]
+    def InvokeMethod(self, request: call_pb2.ServiceCall, context) -> call_pb2.Data:  # type: ignore
+        service_instance = self._service_instances[request.service]  # type: ignore
 
-        service_method = getattr(service_instance, request.method)
+        service_method = getattr(service_instance, request.method)  # type: ignore
 
         args = []
         kw = {}
 
-        for param in request.parameters:
+        for param in request.parameters:  # type: ignore
             value = from_data(param.data)
 
             if param.name:

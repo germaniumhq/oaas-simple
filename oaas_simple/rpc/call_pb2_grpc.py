@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import oaas_transport_grpc.rpc.call_pb2 as call__pb2
+import oaas_simple.rpc.call_pb2 as call__pb2
 
 
 class ServiceInvokerStub(object):
@@ -25,7 +25,9 @@ class ServiceInvokerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def InvokeMethod(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """*
+        Invoke a single method.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

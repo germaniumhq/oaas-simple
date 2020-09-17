@@ -2,8 +2,8 @@ from typing import Any, Dict, Callable
 
 from oaas import ClientDefinition
 
-from oaas_transport_grpc.client.single_method import SingleMethod
-from oaas_transport_grpc.rpc import call_pb2_grpc, call_pb2
+from oaas_simple.client.single_method import SingleMethod
+from oaas_simple.rpc import call_pb2_grpc
 
 
 class ServiceClientProxy:

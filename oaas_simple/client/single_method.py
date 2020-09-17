@@ -2,8 +2,8 @@ from typing import Any
 
 from oaas import ClientDefinition
 
-from oaas_transport_grpc.data import create_data, from_data
-from oaas_transport_grpc.rpc import call_pb2
+from oaas_simple.data import create_data, from_data
+from oaas_simple.rpc import call_pb2
 
 
 class SingleMethod:
@@ -32,7 +32,7 @@ class SingleMethod:
             )
             parameters.append(param)
 
-        response: call_pb2.Data = self.stub.InvokeMethod(call_pb2.ServiceCall(
+        response: call_pb2.Data = self.stub.InvokeMethod(call_pb2.ServiceCall(  # ignore: type
             namespace=None,
             service=self.client_definition.name,
             version=None,
