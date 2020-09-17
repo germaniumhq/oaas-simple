@@ -3,10 +3,11 @@ import germanium_py_exe  # type: ignore
 
 germanium_py_exe.pipeline(
     {
-        "repo": "git@github.com:bmustiata/oaas_simple.git",
+        "run_mypy": False,
+        "repo": "git@github.com:germaniumhq/oaas_simple.git",
         "binaries": {
-            "name": "Python 3.7 on Linux x64",
-            "platform": "python:3.7",
+            "name": "Python 3.8 on Linux x64",
+            "platform": "python:3.8",
             "publish_pypi": "sdist",
         },
     }
