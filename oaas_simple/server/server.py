@@ -10,9 +10,9 @@ from oaas_simple.server.find_ips import find_ips
 from oaas_simple.server.service_invoker_proxy import ServiceInvokerProxy
 
 
-class OaasGrpcTransportServer(oaas.ServerMiddleware):
+class OaasSimpleServer(oaas.ServerMiddleware):
     def __init__(self, *, port=8999):
-        super(OaasGrpcTransportServer, self).__init__()
+        super(OaasSimpleServer, self).__init__()
         self.port = port
 
     def serve(self) -> None:
@@ -33,10 +33,11 @@ class OaasGrpcTransportServer(oaas.ServerMiddleware):
         return server
 
     def register_services_into_registry(self):
-        registry = oaas_registry()
-
         for service_definition, _ in registrations.services.items():
-            registry.register_service(
+            if service_definition.name == "oaas-registry":
+                continue
+
+            oaas_registry().register_service(
                 {
                     "name": service_definition.name,
                     "protocol": "simple",

@@ -13,15 +13,18 @@ from oaas_simple.client.service_client_proxy import ServiceClientProxy
 from oaas_simple.registry import oaas_registry
 
 
-def is_port_open(host_address: str, port: int):
+def is_someone_listening(host_address: str, port: int):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as a_socket:
         location = (host_address, port)
-        result_of_check = a_socket.connect_ex(location)
+        try:
+            result_of_check = a_socket.connect_ex(location)
 
-        return result_of_check == 0
+            return result_of_check == 0
+        except Exception:
+            return False
 
 
-class OaasGrpcTransportClient(oaas.ClientMiddleware):
+class OaasSimpleClient(oaas.ClientMiddleware):
     def __init__(self) -> None:
         self._client_to_address: Dict[str, str] = dict()
         self._channels: Dict[str, Any] = dict()
@@ -63,7 +66,7 @@ class OaasGrpcTransportClient(oaas.ClientMiddleware):
                 self._client_to_address[cd.name] = address
                 return self._channels[address]
 
-            if not is_port_open(host_address, port):
+            if not is_someone_listening(host_address, port):
                 continue
 
             channel = grpc.insecure_channel(address)
