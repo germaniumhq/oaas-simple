@@ -3,37 +3,51 @@
 import os
 import subprocess
 import logging
+import re
 
 from termcolor_util import cyan, yellow
 
 FOLDER = "grpc"
 EXTENSION = ".proto"
 
+IMPORT_RE = re.compile(r"^(import )(.+? as .*)$", re.MULTILINE)
+
 
 def main() -> None:
+    files_changed = False
+
     for f in os.listdir(FOLDER):
         if not f.endswith(EXTENSION):
             continue
 
-        ui_file = os.path.join(FOLDER, f)
-        target_file = find_target_file(ui_file)
+        grpc_file = os.path.join(FOLDER, f)
+        generated_proto_file = find_target_file(grpc_file, suffix="_pb2.py")
+        generated_proto_pyi = find_target_file(grpc_file, suffix="_pb2.pyi")
+        generated_grpc_file = find_target_file(grpc_file, suffix="_pb2_grpc.py")
 
-        if is_newer(ui_file, target_file):
+        if is_newer(grpc_file, generated_proto_file) and is_newer(
+            grpc_file, generated_grpc_file
+        ):
             print(
                 cyan("IGNORED", bold=True),
-                cyan(target_file, bold=True),
-                cyan("is newer than"),
-                cyan(ui_file, bold=True),
+                cyan(grpc_file, bold=True),
+                cyan("is older than both"),
+                cyan(generated_proto_file, bold=True),
+                cyan("and"),
+                cyan(generated_grpc_file, bold=True),
             )
             continue
 
-        ui_compile(ui_file, target_file)
+        files_changed = True
+        grpc_compile(
+            grpc_file, generated_grpc_file, generated_proto_file, generated_proto_pyi
+        )
 
 
-def find_target_file(ui_file: str) -> str:
+def find_target_file(grpc_file: str, suffix: str) -> str:
     # 3:-3 - remove FOLDER from prefix, and EXTENSION from suffix of the file
-    python_file = ui_file[len(FOLDER) + 1 : -(len(EXTENSION))] + ".py"
-    return os.path.join("oaas_transport_grpc", FOLDER, "generated", python_file)
+    python_file = grpc_file[len(FOLDER) + 1 : -(len(EXTENSION))] + suffix
+    return os.path.join("oaas_simple", "rpc", python_file)
 
 
 def is_newer(base: str, expected_newer: str) -> True:
@@ -55,18 +69,28 @@ def is_newer(base: str, expected_newer: str) -> True:
     return False
 
 
-def ui_compile(ui_file, target_file) -> None:
+def grpc_compile(
+    grpc_file: str,
+    generated_grpc_file: str,
+    generated_proto_file: str,
+    generated_proto_pyi: str,
+) -> None:
     """
     Compiles the UI using pyside2-uic, the python code generator from
     the UI files.
     """
     print(
         yellow("COMPILING"),
-        yellow(ui_file, bold=True),
+        yellow(grpc_file, bold=True),
         yellow("->"),
-        yellow(target_file, bold=True),
+        yellow(generated_grpc_file, bold=True),
+        yellow(","),
+        yellow(generated_proto_file, bold=True),
     )
 
+    # ####################################################################
+    # Generate the actual sources
+    # ####################################################################
     subprocess.check_call(
         [
             "python",
@@ -74,9 +98,36 @@ def ui_compile(ui_file, target_file) -> None:
             "grpc_tools.protoc",
             "-I",
             FOLDER,
-            "--python_out=oaas_transport_grpc/rpc/",
-            "--grpc_python_out=oaas_transport_grpc/rpc",
-            "--mypy_out=oaas_transport_grpc/rpc grpc/call.proto",
+            "--python_out=oaas_simple/rpc/",
+            "--grpc_python_out=oaas_simple/rpc",
+            "--mypy_out=oaas_simple/rpc",
+            grpc_file,
+        ]
+    )
+
+    # ####################################################################
+    # Patch the imports because the generator can't do it
+    # https://github.com/protocolbuffers/protobuf/issues/7061
+    # ####################################################################
+    with open(generated_grpc_file, "rt", encoding="utf-8") as f:
+        content = f.read()
+
+    new_content = IMPORT_RE.sub(r"\1 oaas_simple.rpc.\2", content)
+
+    with open(generated_grpc_file, "wt", encoding="utf-8") as f:
+        f.write(new_content)
+
+    # ####################################################################
+    # Run black over the final sources
+    # ####################################################################
+    subprocess.call(
+        [
+            "python",
+            "-m",
+            "black",
+            generated_grpc_file,
+            generated_proto_file,
+            generated_proto_pyi,
         ]
     )
 

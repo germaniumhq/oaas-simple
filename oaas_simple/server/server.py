@@ -11,9 +11,9 @@ from oaas_simple.server.service_invoker_proxy import ServiceInvokerProxy
 
 
 class OaasGrpcTransportServer(oaas.ServerMiddleware):
-    def __init__(self):
+    def __init__(self, *, port=8999):
         super(OaasGrpcTransportServer, self).__init__()
-        self.port = 8999  # FIXME: detect/set the port
+        self.port = port
 
     def serve(self) -> None:
         self.server = self.start_server()
