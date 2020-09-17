@@ -18,6 +18,6 @@ def oaas_registry() -> OaasRegistry:
     if _oaas_registry:
         return _oaas_registry
 
-    _oaas_registry = oaas.get_client(OaasRegistry)
+    _oaas_registry = oaas.get_client(OaasRegistry)  # type: ignore
 
     return _oaas_registry

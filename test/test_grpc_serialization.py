@@ -10,9 +10,9 @@ from oaas_simple.server.server import OaasGrpcTransportServer
 
 def service_definition_key(service_definition: oaas.registry.ServiceDefinition) -> str:
     return \
-        service_definition.get("protocol") + ":" + \
+        service_definition.get("protocol", "") + ":" + \
         service_definition.get("namespace", "") + ":" + \
-        service_definition.get("name") + ":" + \
+        service_definition.get("name", "") + ":" + \
         service_definition.get("version", "")
 
 
@@ -51,6 +51,6 @@ oaas.serve()
 
 
 class TestGrpcSerialization(unittest.TestCase):
-    def test_serialization(self):
+    def test_serialization(self) -> None:
         client = oaas.get_client(TestCallClient)
         self.assertEqual("abc", client.echo_data(data="abc"))

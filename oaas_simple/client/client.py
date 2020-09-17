@@ -3,6 +3,7 @@ from typing import Any, Dict
 import grpc
 import oaas
 import socket
+import random
 
 from oaas import ClientDefinition
 from oaas.registry import ServiceAddress
@@ -50,7 +51,10 @@ class OaasGrpcTransportClient(oaas.ClientMiddleware):
                        cd: ClientDefinition,
                        service_address: ServiceAddress):
         port = service_address["port"]
-        for host_address in service_address["addresses"]:
+        addresses = service_address["addresses"]
+        random.shuffle(addresses)
+
+        for host_address in addresses:
             address = f"{host_address}:{port}"
 
             # if we already have a channel for this address, we don't need
@@ -65,7 +69,7 @@ class OaasGrpcTransportClient(oaas.ClientMiddleware):
 
             channel = grpc.insecure_channel(address)
             self._channels[address] = channel
-            self._client_to_address[cd.name] = service_address
+            self._client_to_address[cd.name] = address
 
             return channel
 

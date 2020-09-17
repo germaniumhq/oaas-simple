@@ -9,7 +9,7 @@ def create_data(data: Union[str, bytes, Any]) -> call_pb2.Data:
         return call_pb2.Data(s=data)
 
     if isinstance(data, bytes):
-        return call_pb2.Data(b=bytes)
+        return call_pb2.Data(b=data)
 
     json_data = json.dumps(data)
     return call_pb2.Data(json=json_data)
