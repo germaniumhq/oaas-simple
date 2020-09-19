@@ -4,7 +4,7 @@ out of the box for most simple scenarios.
 Installation
 ============
 
-    pip install oaas_transport_grpc
+    pip install oaas_simple
 
 Usage
 =====

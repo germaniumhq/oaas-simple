@@ -6,7 +6,7 @@ Installation
 
 .. code:: sh
 
-    pip install oaas_transport_grpc
+    pip install oaas_simple
 
 Usage
 =====

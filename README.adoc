@@ -7,7 +7,7 @@ the box for most simple scenarios.
 
 [source,sh]
 -----------------------------------------------------------------------------
-pip install oaas_transport_grpc
+pip install oaas_simple
 -----------------------------------------------------------------------------
 
 == Usage
