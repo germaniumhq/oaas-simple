@@ -12,11 +12,15 @@ class ServiceClientProxy:
     to the service.
     """
 
-    def __init__(self, *, client_definition: ClientDefinition, channel: Any) -> None:
+    def __init__(
+        self,
+        *,
+        client_definition: ClientDefinition,
+        stub: call_pb2_grpc.ServiceInvokerStub,
+    ) -> None:
         self._methods: Dict[str, Callable] = dict()
         self.client_definition = client_definition
-
-        self.stub = call_pb2_grpc.ServiceInvokerStub(channel)
+        self.stub = stub
 
     def __getattr__(self, method_name: str):
         result = self._methods.get(method_name, None)

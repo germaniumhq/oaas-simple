@@ -32,19 +32,19 @@ class ServiceInvokerServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
-
-def add_ServiceInvokerServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-        "InvokeMethod": grpc.unary_unary_rpc_method_handler(
-            servicer.InvokeMethod,
-            request_deserializer=call__pb2.ServiceCall.FromString,
-            response_serializer=call__pb2.Data.SerializeToString,
-        ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-        "gr.ServiceInvoker", rpc_method_handlers
-    )
-    server.add_generic_rpc_handlers((generic_handler,))
+    @staticmethod
+    def add_to_server(servicer, server):
+        rpc_method_handlers = {
+            "InvokeMethod": grpc.unary_unary_rpc_method_handler(
+                servicer.InvokeMethod,
+                request_deserializer=call__pb2.ServiceCall.FromString,
+                response_serializer=call__pb2.Data.SerializeToString,
+            ),
+        }
+        generic_handler = grpc.method_handlers_generic_handler(
+            "gr.ServiceInvoker", rpc_method_handlers
+        )
+        server.add_generic_rpc_handlers((generic_handler,))
 
 
 # This class is part of an EXPERIMENTAL API.

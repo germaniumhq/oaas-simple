@@ -1,19 +1,27 @@
 from typing import Any, Dict
 
 import oaas._registrations as registrations
+import oaas_simple.server.server
+from oaas import service
 
 from oaas_simple.data import from_data, create_data
 from oaas_simple.rpc import call_pb2
 from oaas_simple.rpc import call_pb2_grpc
 
 
+@service("service-invoker-proxy")
 class ServiceInvokerProxy(call_pb2_grpc.ServiceInvokerServicer):
     def __init__(self) -> None:
         self._service_instances: Dict[str, Any] = dict()
 
+        server = find_simple_server()
+
         # we keep a live instance of the service
         for service_definition in registrations.services:
-            self._service_instances[service_definition.name] = service_definition.code()
+            if server.can_serve(service_definition):
+                self._service_instances[
+                    service_definition.name
+                ] = service_definition.code()
 
     """
     Invokes the service on this server.
@@ -38,3 +46,15 @@ class ServiceInvokerProxy(call_pb2_grpc.ServiceInvokerServicer):
         result = service_method(*args, **kw)
 
         return create_data(result)
+
+
+def find_simple_server():
+    for server in registrations.servers_middleware:
+        if isinstance(server, oaas_simple.server.server.OaasSimpleServer):
+            return server
+
+    raise Exception("No OaasSimpleServer was registered")
+
+
+def noop():
+    pass

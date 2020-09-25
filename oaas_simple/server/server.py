@@ -1,49 +1,76 @@
-from concurrent import futures
+from typing import Optional
 
-import grpc
 import oaas
-import oaas._registrations as registrations
+from oaas_grpc.server import OaasGrpcServer
+from oaas_grpc.server.find_ips import find_ips
+from oaas_registry_api import OaasRegistryStub
+from oaas_registry_api.rpc.registry_pb2 import OaasServiceDefinition
 
-from oaas_simple.registry import oaas_registry
-from oaas_simple.rpc import call_pb2_grpc
-from oaas_simple.server.find_ips import find_ips
-from oaas_simple.server.service_invoker_proxy import ServiceInvokerProxy
+from oaas_simple.server.service_invoker_proxy import noop
+
+noop()
 
 
 class OaasSimpleServer(oaas.ServerMiddleware):
     def __init__(self, *, port=8999):
         super(OaasSimpleServer, self).__init__()
+
         self.port = port
+        self._grpc_server: Optional[OaasGrpcServer] = None
 
     def serve(self) -> None:
-        self.server = self.start_server()
-        self.register_services_into_registry()
+        locations = find_ips(port=self.port)
 
-    def join(self) -> None:
-        self.server.wait_for_termination()
+        # we ensure we're serving with the gRPC server first
+        self._oaas_grpc_server.serve()
 
-    def start_server(self):
-        server_address: str = f"[::]:{self.port}"
-        server = grpc.server(futures.ThreadPoolExecutor())
-        call_pb2_grpc.add_ServiceInvokerServicer_to_server(
-            ServiceInvokerProxy(), server
-        )
-        port = server.add_insecure_port(server_address)
-        server.start()
-        return server
+        # we can get the registry only after the server is servicing
+        # in case this _is_ the registry.
+        registry = oaas.get_client(OaasRegistryStub)
 
-    def register_services_into_registry(self):
-        for service_definition, _ in registrations.services.items():
-            if service_definition.name == "oaas-registry":
+        # we register the services
+        for service_definition in oaas.registrations.services:
+            if not self.can_serve(service_definition=service_definition):
                 continue
 
-            oaas_registry().register_service(
-                {
-                    "name": service_definition.name,
-                    "protocol": "simple",
-                },
-                {
-                    "port": self.port,
-                    "addresses": find_ips(),
-                },
+            print(
+                f"Added SIMPLE service: {service_definition.gav} as {service_definition.code}"
             )
+
+            registry.register_service(
+                OaasServiceDefinition(
+                    namespace=service_definition.namespace,
+                    name=service_definition.name,
+                    version=service_definition.version,
+                    tags={
+                        "_protocol": "simple",
+                    },
+                    locations=locations,
+                )
+            )
+
+    def join(self) -> None:
+        self._oaas_grpc_server.join()
+
+    def can_serve(self, service_definition: oaas.ServiceDefinition) -> bool:
+        return not hasattr(service_definition.code, "add_to_server")
+
+    @property
+    def _oaas_grpc_server(self) -> OaasGrpcServer:
+        """
+        The simple server is a single service on top of gRPC. This will
+        check if there's another server already registered and use it
+        first. If there isn't any, it will create one.
+        """
+        if self._grpc_server:
+            return self._grpc_server
+
+        # search in the registration for a gRPC server with the same port
+        # as the simple service
+        for server in oaas.registrations.servers_middleware:
+            if isinstance(server, OaasGrpcServer) and server.port == self.port:
+                self._grpc_server = server
+                return self._grpc_server
+
+        self._grpc_server = OaasGrpcServer(port=self.port)
+        return self._grpc_server

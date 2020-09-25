@@ -27,9 +27,9 @@ class SingleMethod:
 
         response: call_pb2.Data = self.stub.InvokeMethod(
             call_pb2.ServiceCall(  # ignore: type
-                namespace=None,
+                namespace=self.client_definition.namespace,
                 service=self.client_definition.name,
-                version=None,
+                version=self.client_definition.version,
                 method=self.method,
                 parameters=parameters,
             )
