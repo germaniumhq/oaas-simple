@@ -1,11 +1,11 @@
 from typing import Optional
 
 import oaas
+import oaas_grpc.server.server
 from oaas_grpc.server import OaasGrpcServer
 from oaas_grpc.server.find_ips import find_ips
 from oaas_registry_api import OaasRegistryStub
 from oaas_registry_api.rpc.registry_pb2 import OaasServiceDefinition
-
 from oaas_simple.server.service_invoker_proxy import noop
 
 noop()
@@ -17,8 +17,14 @@ class OaasSimpleServer(oaas.ServerMiddleware):
 
         self.port = port
         self._grpc_server: Optional[OaasGrpcServer] = None
+        self._is_serving = True
 
     def serve(self) -> None:
+        if self._is_serving:
+            return
+
+        self._is_serving = True
+
         locations = find_ips(port=self.port)
 
         # we ensure we're serving with the gRPC server first
@@ -53,7 +59,10 @@ class OaasSimpleServer(oaas.ServerMiddleware):
         self._oaas_grpc_server.join()
 
     def can_serve(self, service_definition: oaas.ServiceDefinition) -> bool:
-        return not hasattr(service_definition.code, "add_to_server")
+        return (
+            oaas_grpc.server.server.find_add_to_server_base(service_definition.code)
+            is None
+        )
 
     @property
     def _oaas_grpc_server(self) -> OaasGrpcServer:
