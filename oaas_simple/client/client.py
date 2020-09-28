@@ -23,6 +23,9 @@ class OaasSimpleClient(oaas.ClientMiddleware):
     def __init__(self) -> None:
         self._grpc_client: Optional[OaasGrpcClient] = None
 
+        # FIXME: instantiating a client shouldn't magically add it
+        oaas.register_client_provider(OaasGrpcClient())
+
     def create_client(self, client_definition: ClientDefinition) -> Any:
         client_proxy = self._oaas_grpc_client.create_grpc_client(
             namespace=client_definition.namespace,

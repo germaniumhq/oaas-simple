@@ -16,12 +16,12 @@ class ServiceInvokerProxy(call_pb2_grpc.ServiceInvokerServicer):
 
         server = find_simple_server()
 
-        # we keep a live instance of the service
+        # we only register the non grpc services as simple services
         for service_definition in registrations.services:
-            if server.can_serve(service_definition):
-                self._service_instances[
-                    service_definition.name
-                ] = service_definition.code()
+            if server._grpc_server.can_serve(service_definition):
+                continue
+
+            self._service_instances[service_definition.name] = service_definition.code()
 
     """
     Invokes the service on this server.
