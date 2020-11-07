@@ -1,12 +1,12 @@
 from typing import Any, Dict
 
-import oaas._registrations as registrations
 import oaas_simple.server.server
-from oaas import service
-
 from oaas_simple.data import from_data, create_data
 from oaas_simple.rpc import call_pb2
 from oaas_simple.rpc import call_pb2_grpc
+
+import oaas._registrations as registrations
+from oaas import service
 
 
 @service("service-invoker-proxy")
